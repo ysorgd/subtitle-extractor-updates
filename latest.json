@@ -1,7 +1,7 @@
 {
-  "version": "6.0.0",
+  "version": "1.0.0",
   "published_at": "2026-08-17",
-  "notes": "V6 初始版本。",
+  "notes": "正式版 1.0.0。",
   "download_url": "https://gitee.com/yttcast/subtitle-extractor-updates/releases",
   "sha256": "",
   "mandatory": false
