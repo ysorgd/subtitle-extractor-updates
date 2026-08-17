@@ -1,8 +1,8 @@
 {
   "version": "1.0.0",
-  "published_at": "2026-08-17",
-  "notes": "正式版 1.0.0。",
-  "download_url": "https://gitee.com/yttcast/subtitle-extractor-updates/releases",
-  "sha256": "",
+  "published_at": "2026-08-18",
+  "notes": "V1.0.0 正式版。",
+  "download_url": "https://gitee.com/yttcast/subtitle-extractor-updates/releases/tag/v1.0.0",
+  "sha256": "9CD91A1570252E255B7194868CD91A5B43A6798CD13DFB10DE31136DF1D2DE45",
   "mandatory": false
 }
