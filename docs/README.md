@@ -9,7 +9,7 @@
 
 ## 当前状态
 
-该网站从 GitHub 仓库的 `main/site` 发布到：
+该网站从 GitHub 仓库的 `main /docs` 发布到：
 
 https://ysorgd.github.io/subtitle-extractor-updates/
 
@@ -28,6 +28,6 @@ GitHub 清单中的下载地址仅接受 `https://github.com`。远端文字字�
 
 ## 部署
 
-本目录只包含 HTML、CSS、JavaScript 和图片，可从 GitHub Pages 的 `main/site` 直接发布，无需构建。
+本目录只包含 HTML、CSS、JavaScript 和图片，可从 GitHub Pages 的 `main /docs` 直接发布，无需构建。
 
 部署前无需构建，也不要上传 Token、本机路径、构建缓存、测试文件或本地模型文件。

@@ -56,4 +56,8 @@ Get-FileHash .\SubtitleExtractor_V1.0.0_Setup_x64.exe -Algorithm SHA256
 
 ## 静态官网源码
 
-静态网页源码位于 [`site/`](./site/)，通过 [GitHub Pages](https://ysorgd.github.io/subtitle-extractor-updates/) 发布。详情见 [`site/README.md`](./site/README.md)。
+静态网页源码位于 [`docs/`](./docs/)，通过 GitHub Pages 的 `main /docs` 目录发布：
+
+https://ysorgd.github.io/subtitle-extractor-updates/
+
+详情见 [`docs/README.md`](./docs/README.md)。

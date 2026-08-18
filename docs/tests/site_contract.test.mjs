@@ -6,6 +6,7 @@ import vm from 'node:vm';
 const siteRoot = new URL('../', import.meta.url);
 const html = readFileSync(new URL('index.html', siteRoot), 'utf8');
 const script = readFileSync(new URL('script.js', siteRoot), 'utf8');
+const rootReadme = readFileSync(new URL('../../README.md', import.meta.url), 'utf8');
 
 function loadScript() {
   const context = vm.createContext({
@@ -31,7 +32,7 @@ function loadScript() {
     },
   });
   const definitionOnly = script.replace(/\nloadRelease\(\);\s*$/, '');
-  vm.runInContext(definitionOnly, context, { filename: 'site/script.js' });
+  vm.runInContext(definitionOnly, context, { filename: 'docs/script.js' });
   return context;
 }
 
@@ -76,5 +77,12 @@ test('断网兜底固定为 V1.0.0 GitHub 安装包且 Gitee 按钮独立存在'
 test('远端文本只通过 textContent 渲染', () => {
   assert.doesNotMatch(script, /innerHTML/);
   assert.match(script, /textContent/);
+  assert.match(script, /fetch\('\.\.\/latest\.json', \{ cache: 'no-store' \}\)/);
+});
+
+test('GitHub Pages 从 main /docs 发布并继续读取根目录清单', () => {
+  assert.match(siteRoot.pathname, /\/docs\/$/);
+  assert.match(rootReadme, /\[`docs\/`\]\(\.\/docs\/\)/);
+  assert.match(rootReadme, /main\s*\/docs/);
   assert.match(script, /fetch\('\.\.\/latest\.json', \{ cache: 'no-store' \}\)/);
 });
