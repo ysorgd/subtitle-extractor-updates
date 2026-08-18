@@ -34,11 +34,17 @@
             <span>适用于 Windows x64</span>
             <span>发布日期 <span data-published-at>2026-08-18</span></span>
           </div>
-          <a class="download-primary" data-download href="https://gitee.com/yttcast/subtitle-extractor-updates/releases/download/v1.0.0/SubtitleExtractor_V1.0.0_Setup_x64.exe">
-            <span>下载 Windows x64 安装包</span>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14" /></svg>
-          </a>
-          <p class="download-note">下载后运行安装程序即可开始安装。</p>
+          <div class="download-actions" aria-label="Windows x64 安装包下载通道">
+            <a class="download-primary" data-github-download-link href="https://github.com/ysorgd/subtitle-extractor-updates/releases/download/v1.0.0/SubtitleExtractor_V1.0.0_Setup_x64.exe">
+              <span>从 GitHub 下载</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14" /></svg>
+            </a>
+            <a class="download-secondary" data-gitee-download-link href="https://gitee.com/yttcast/subtitle-extractor-updates/releases/download/v1.0.0/SubtitleExtractor_V1.0.0_Setup_x64.exe">
+              <span>国内备用下载（Gitee）</span>
+              <span class="arrow" aria-hidden="true">↗</span>
+            </a>
+          </div>
+          <p class="download-note">两个按钮为独立下载通道；下载后运行安装程序即可开始安装。</p>
           <p class="manifest-status" data-manifest-status aria-live="polite">当前显示内置版本信息</p>
         </div>
 
@@ -119,8 +125,8 @@
                 <code data-sha256>9CD91A1570252E255B7194868CD91A5B43A6798CD13DFB10DE31136DF1D2DE45</code>
               </div>
             </div>
-            <a class="update-link" href="https://gitee.com/yttcast/subtitle-extractor-updates/releases" target="_blank" rel="noreferrer" aria-label="更新与版本说明">
-              <span><strong>更新与版本说明</strong><small>前往 Gitee Releases</small></span>
+            <a class="update-link" href="https://github.com/ysorgd/subtitle-extractor-updates/releases" target="_blank" rel="noreferrer" aria-label="更新与版本说明">
+              <span><strong>更新与版本说明</strong><small>前往 GitHub Releases</small></span>
               <span class="arrow" aria-hidden="true">↗</span>
             </a>
           </div>
@@ -133,7 +139,10 @@
         <img class="brand-logo" src="./assets/app_brand.png" alt="" />
         <div><strong>字幕提取器</strong><span>Windows x64 · <span data-version>V1.0.0</span></span></div>
       </div>
-      <a href="https://gitee.com/yttcast/subtitle-extractor-updates/releases" target="_blank" rel="noreferrer">Gitee 源码 / 更新仓库</a>
+      <div class="footer-links">
+        <a href="https://github.com/ysorgd/subtitle-extractor-updates" target="_blank" rel="noreferrer">GitHub 更新仓库</a>
+        <a href="https://gitee.com/yttcast/subtitle-extractor-updates" target="_blank" rel="noreferrer">Gitee 国内镜像</a>
+      </div>
     </footer>
 
     <script src="./script.js"></script>

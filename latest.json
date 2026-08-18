@@ -3,7 +3,7 @@
   "published_at": "2026-08-18",
   "release_notes": "V1.0.0 正式版。",
   "notes": "V1.0.0 正式版。",
-  "download_url": "https://gitee.com/yttcast/subtitle-extractor-updates/releases/download/v1.0.0/SubtitleExtractor_V1.0.0_Setup_x64.exe",
+  "download_url": "https://github.com/ysorgd/subtitle-extractor-updates/releases/download/v1.0.0/SubtitleExtractor_V1.0.0_Setup_x64.exe",
   "sha256": "9CD91A1570252E255B7194868CD91A5B43A6798CD13DFB10DE31136DF1D2DE45",
   "mandatory": false
 }

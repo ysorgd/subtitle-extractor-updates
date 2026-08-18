@@ -7,7 +7,9 @@
 
 ## 下载
 
-### [⬇ 下载 Windows x64 安装包（V1.0.0）](https://gitee.com/yttcast/subtitle-extractor-updates/releases/download/v1.0.0/SubtitleExtractor_V1.0.0_Setup_x64.exe)
+### [⬇ 从 GitHub 下载 Windows x64 安装包（V1.0.0）](https://github.com/ysorgd/subtitle-extractor-updates/releases/download/v1.0.0/SubtitleExtractor_V1.0.0_Setup_x64.exe)
+
+[国内备用下载（Gitee）](https://gitee.com/yttcast/subtitle-extractor-updates/releases/download/v1.0.0/SubtitleExtractor_V1.0.0_Setup_x64.exe)
 
 请仅下载并运行上方链接指向的官方安装包：
 
@@ -25,7 +27,7 @@
 ## 如何检查更新
 
 - 打开字幕提取器，在程序中使用“检查更新”。
-- 也可以打开 [更新与版本说明](https://gitee.com/yttcast/subtitle-extractor-updates/releases) 查看已发布版本。
+- 也可以打开 [GitHub 更新与版本说明](https://github.com/ysorgd/subtitle-extractor-updates/releases) 查看已发布版本。
 - 网站源码会读取仓库中的 [`latest.json`](./latest.json) 显示当前版本信息；读取失败时会继续显示内置的 V1.0.0 下载信息。
 
 ## SHA256 校验值
@@ -50,8 +52,8 @@ Get-FileHash .\SubtitleExtractor_V1.0.0_Setup_x64.exe -Algorithm SHA256
 - 请使用 Releases 中提供的 `.exe` 官方安装包，不要下载仓库 ZIP 作为安装包。
 - 安装新版会覆盖升级旧版，通常无需先卸载旧版本。
 - 安装包不包含本地 ASR 模型权重；首次使用本地识别时，需要自行配置模型目录。
-- 如需查看历史版本，请进入 [Releases](https://gitee.com/yttcast/subtitle-extractor-updates/releases)。
+- 如需查看历史版本，请进入 [GitHub Releases](https://github.com/ysorgd/subtitle-extractor-updates/releases)；中国大陆用户也可使用 [Gitee 国内镜像](https://gitee.com/yttcast/subtitle-extractor-updates/releases)。
 
 ## 静态官网源码
 
-静态网页源码位于 [`site/`](./site/)，当前不单独部署。详情见 [`site/README.md`](./site/README.md)。
+静态网页源码位于 [`site/`](./site/)，通过 [GitHub Pages](https://ysorgd.github.io/subtitle-extractor-updates/) 发布。详情见 [`site/README.md`](./site/README.md)。

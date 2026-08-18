@@ -1,49 +1,15 @@
-const FALLBACK_RELEASE = Object.freeze({
+const FALLBACK = Object.freeze({
   version: '1.0.0',
-  publishedAt: '2026-08-18',
-  releaseNotes: 'V1.0.0 正式版。',
+  published_at: '2026-08-18',
+  release_notes: '正式版 1.0.0。',
   sha256: '9CD91A1570252E255B7194868CD91A5B43A6798CD13DFB10DE31136DF1D2DE45',
-  downloadUrl: 'https://gitee.com/yttcast/subtitle-extractor-updates/releases/download/v1.0.0/SubtitleExtractor_V1.0.0_Setup_x64.exe',
+  download_url: 'https://github.com/ysorgd/subtitle-extractor-updates/releases/download/v1.0.0/SubtitleExtractor_V1.0.0_Setup_x64.exe'
 });
 
-const SAME_ORIGIN_MANIFEST = '../latest.json';
-const GITEE_CONTENTS_API = 'https://gitee.com/api/v5/repos/yttcast/subtitle-extractor-updates/contents/latest.json?ref=main';
-const REQUEST_TIMEOUT_MS = 3500;
-
-async function fetchJson(url) {
-  const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-  try {
-    const response = await fetch(url, {
-      method: 'GET',
-      credentials: 'omit',
-      cache: 'no-store',
-      headers: { Accept: 'application/json' },
-      signal: controller.signal,
-    });
-    if (!response.ok) throw new Error(`请求失败：${response.status}`);
-    return await response.json();
-  } finally {
-    window.clearTimeout(timeout);
-  }
-}
-
-function decodeBase64Utf8(value) {
-  const binary = atob(value.replace(/\s/g, ''));
-  const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
-  return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
-}
-
 async function fetchManifest() {
-  try {
-    return await fetchJson(SAME_ORIGIN_MANIFEST);
-  } catch {
-    const file = await fetchJson(GITEE_CONTENTS_API);
-    if (!file || typeof file.content !== 'string' || file.encoding !== 'base64') {
-      throw new Error('Gitee 返回的 latest.json 内容无效');
-    }
-    return JSON.parse(decodeBase64Utf8(file.content));
-  }
+  const response = await fetch('../latest.json', { cache: 'no-store' });
+  if (!response.ok) throw new Error(`请求失败：${response.status}`);
+  return await response.json();
 }
 
 function readText(value, fieldName, maximumLength) {
@@ -65,14 +31,16 @@ function normalizeManifest(manifest) {
   if (!/^[A-F0-9]{64}$/.test(sha256)) throw new Error('sha256 格式无效');
 
   const downloadUrl = new URL(readText(manifest.download_url, 'download_url', 2048));
-  if (downloadUrl.protocol !== 'https:') throw new Error('download_url 必须使用 HTTPS');
+  if (downloadUrl.protocol !== 'https:' || downloadUrl.hostname.toLowerCase() !== 'github.com') {
+    throw new Error('download_url 必须指向 github.com 的 HTTPS 地址');
+  }
 
   return {
     version,
-    publishedAt,
-    releaseNotes,
+    published_at: publishedAt,
+    release_notes: releaseNotes,
     sha256,
-    downloadUrl: downloadUrl.toString(),
+    download_url: downloadUrl.toString(),
   };
 }
 
@@ -80,10 +48,10 @@ function applyRelease(release, statusText) {
   document.querySelectorAll('[data-version]').forEach((element) => {
     element.textContent = `V${release.version}`;
   });
-  document.querySelector('[data-published-at]').textContent = release.publishedAt;
-  document.querySelector('[data-release-notes]').textContent = release.releaseNotes;
+  document.querySelector('[data-published-at]').textContent = release.published_at;
+  document.querySelector('[data-release-notes]').textContent = release.release_notes;
   document.querySelector('[data-sha256]').textContent = release.sha256;
-  document.querySelector('[data-download]').href = release.downloadUrl;
+  document.querySelector('[data-github-download-link]').href = release.download_url;
   document.querySelector('[data-manifest-status]').textContent = statusText;
 }
 
@@ -92,7 +60,7 @@ async function loadRelease() {
     const release = normalizeManifest(await fetchManifest());
     applyRelease(release, '已载入最新版本');
   } catch {
-    applyRelease(FALLBACK_RELEASE, '当前显示内置版本信息');
+    applyRelease(FALLBACK, '当前显示内置版本信息');
   }
 }
 
