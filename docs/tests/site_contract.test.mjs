@@ -29,7 +29,7 @@ function manifest(downloadUrl, overrides = {}) {
   };
 }
 
-function loadScript() {
+function loadScript(fetchImplementation = async () => { throw new Error('offline'); }) {
   const context = vm.createContext({
     AbortController,
     Promise,
@@ -38,7 +38,7 @@ function loadScript() {
     URL,
     atob,
     console,
-    fetch: async () => { throw new Error('offline'); },
+    fetch: fetchImplementation,
     window: {
       clearTimeout,
       matchMedia: () => ({ matches: false }),
@@ -138,9 +138,26 @@ test('元数据按 GitHub、Gitee、静态 fallback 顺序选择且下载地址�
 });
 
 test('脚本独立读取 GitHub 和 Gitee manifest', () => {
-  assert.match(script, /github:\s*'\.\.\/latest\.json'/);
+  assert.match(script, /github:\s*'https:\/\/raw\.githubusercontent\.com\/ysorgd\/subtitle-extractor-updates\/main\/latest\.json'/);
   assert.match(script, /gitee:\s*'https:\/\/gitee\.com\/yttcast\/subtitle-extractor-updates\/raw\/main\/latest\.json'/);
   assert.match(script, /Promise\.allSettled/);
+});
+
+test('GitHub Pages 实际请求正式 GitHub Raw manifest', async () => {
+  let requestedUrl = null;
+  const context = loadScript(async (url) => {
+    requestedUrl = url;
+    return {
+      ok: true,
+      json: async () => manifest(OFFICIAL.github_download_url),
+    };
+  });
+
+  await vm.runInContext("fetchManifest('github')", context);
+  assert.equal(
+    requestedUrl,
+    'https://raw.githubusercontent.com/ysorgd/subtitle-extractor-updates/main/latest.json',
+  );
 });
 
 test('静态页面已经是正式 V1.1.0 且没有发布占位内容', () => {

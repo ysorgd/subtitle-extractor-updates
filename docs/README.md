@@ -20,7 +20,7 @@ https://ysorgd.github.io/subtitle-extractor-updates/
 
 页面独立读取两个发布清单：
 
-- GitHub：同仓库根目录的 `../latest.json`
+- GitHub：`https://raw.githubusercontent.com/ysorgd/subtitle-extractor-updates/main/latest.json`
 - Gitee：`https://gitee.com/yttcast/subtitle-extractor-updates/raw/main/latest.json`
 
 版本、发布日期、版本说明和 SHA256 优先采用有效的 GitHub 清单；GitHub 清单不可用时采用有效的 Gitee 清单；两者均不可用时显示内置的正式 V1.1.0 数据。

@@ -8,7 +8,7 @@ const FALLBACK_RELEASE = Object.freeze({
 });
 
 const MANIFEST_ENDPOINTS = Object.freeze({
-  github: '../latest.json',
+  github: 'https://raw.githubusercontent.com/ysorgd/subtitle-extractor-updates/main/latest.json',
   gitee: 'https://gitee.com/yttcast/subtitle-extractor-updates/raw/main/latest.json',
 });
 
