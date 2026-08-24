@@ -6,11 +6,33 @@ import vm from 'node:vm';
 const siteRoot = new URL('../', import.meta.url);
 const html = readFileSync(new URL('index.html', siteRoot), 'utf8');
 const script = readFileSync(new URL('script.js', siteRoot), 'utf8');
+const docsReadme = readFileSync(new URL('README.md', siteRoot), 'utf8');
 const rootReadme = readFileSync(new URL('../../README.md', import.meta.url), 'utf8');
+
+const OFFICIAL = Object.freeze({
+  version: '1.1.0',
+  published_at: '2026-08-24',
+  release_notes: 'V1.1.0 改进字幕编辑器重绘与快捷键，加入稳定字幕 ID、Review/待检查及更安全的剧本同步，并移除继承时间码旧流程。',
+  sha256: '6A91B98962E172344DA2DE3033F662CDFBC74C9846B6EA2CD1F4D114A8DDC7C7',
+  github_download_url: 'https://github.com/ysorgd/subtitle-extractor/releases/download/v1.1.0/SubtitleExtractor_V1.1.0_Setup_x64.exe',
+  gitee_download_url: 'https://gitee.com/yttcast/subtitle-extractor-updates/releases/download/v1.1.0/SubtitleExtractor_V1.1.0_Setup_x64.exe',
+});
+
+function manifest(downloadUrl, overrides = {}) {
+  return {
+    version: OFFICIAL.version,
+    published_at: OFFICIAL.published_at,
+    release_notes: OFFICIAL.release_notes,
+    sha256: OFFICIAL.sha256,
+    download_url: downloadUrl,
+    ...overrides,
+  };
+}
 
 function loadScript() {
   const context = vm.createContext({
     AbortController,
+    Promise,
     TextDecoder,
     Uint8Array,
     URL,
@@ -36,53 +58,119 @@ function loadScript() {
   return context;
 }
 
-test('页面提供两个独立下载按钮且不声明自动跳转', () => {
-  assert.match(html, /data-github-download-link/);
-  assert.match(html, /从 GitHub 下载/);
-  assert.match(html, /data-gitee-download-link/);
-  assert.match(html, /国内备用下载（Gitee）/);
+test('页面保持最终 Demo 的四段信息架构', () => {
+  assert.match(html, /<section class="hero"/);
+  assert.match(html, /<section class="features"/);
+  assert.match(html, /<section class="updates"/);
+  assert.match(html, /<footer class="site-footer"/);
+  assert.doesNotMatch(html, /release-details|details-grid|开始校对前/);
+  assert.equal((html.match(/class="feature-card reveal"/g) ?? []).length, 4);
+});
+
+test('页面提供 GitHub 主下载和 Gitee 备用下载且不声明自动跳转', () => {
+  assert.match(html, /class="download-primary"[^>]*data-github-download-link/);
+  assert.match(html, /从 GitHub 下载 Windows x64 安装包/);
+  assert.match(html, /class="download-secondary"[^>]*data-gitee-download-link/);
+  assert.match(html, /Gitee 备用下载/);
   assert.doesNotMatch(html + script, /下载失败.{0,20}(自动|跳转)/);
 });
 
-test('GitHub 清单只接受 github.com 的 HTTPS 下载地址', () => {
+test('两类清单下载地址必须保持通道隔离', () => {
   const context = loadScript();
-  const valid = vm.runInContext(`normalizeManifest({
-    version: '1.0.0',
-    published_at: '2026-08-18',
-    release_notes: '正式版 1.0.0。',
-    sha256: '9CD91A1570252E255B7194868CD91A5B43A6798CD13DFB10DE31136DF1D2DE45',
-    download_url: 'https://github.com/ysorgd/subtitle-extractor-updates/releases/download/v1.0.0/SubtitleExtractor_V1.0.0_Setup_x64.exe'
-  })`, context);
-  assert.equal(valid.download_url, 'https://github.com/ysorgd/subtitle-extractor-updates/releases/download/v1.0.0/SubtitleExtractor_V1.0.0_Setup_x64.exe');
-  assert.throws(() => vm.runInContext(`normalizeManifest({
-    version: '1.0.0',
-    published_at: '2026-08-18',
-    release_notes: '正式版 1.0.0。',
-    sha256: '9CD91A1570252E255B7194868CD91A5B43A6798CD13DFB10DE31136DF1D2DE45',
-    download_url: 'https://gitee.com/yttcast/subtitle-extractor-updates/releases/download/v1.0.0/SubtitleExtractor_V1.0.0_Setup_x64.exe'
-  })`, context), /github\.com/);
+  context.githubManifest = manifest(OFFICIAL.github_download_url);
+  context.giteeManifest = manifest(OFFICIAL.gitee_download_url);
+
+  const github = vm.runInContext("normalizeManifest(githubManifest, 'github')", context);
+  const gitee = vm.runInContext("normalizeManifest(giteeManifest, 'gitee')", context);
+  assert.equal(github.download_url, OFFICIAL.github_download_url);
+  assert.equal(gitee.download_url, OFFICIAL.gitee_download_url);
+
+  assert.throws(
+    () => vm.runInContext("normalizeManifest(giteeManifest, 'github')", context),
+    /github\.com/,
+  );
+  assert.throws(
+    () => vm.runInContext("normalizeManifest(githubManifest, 'gitee')", context),
+    /gitee\.com/,
+  );
 });
 
-test('断网兜底固定为 V1.0.0 GitHub 安装包且 Gitee 按钮独立存在', () => {
+test('静态 fallback 与当前正式 V1.1.0 完全一致', () => {
   const context = loadScript();
-  const fallback = vm.runInContext('FALLBACK', context);
-  assert.equal(fallback.version, '1.0.0');
-  assert.equal(fallback.published_at, '2026-08-18');
-  assert.equal(fallback.release_notes, '正式版 1.0.0。');
-  assert.equal(fallback.sha256, '9CD91A1570252E255B7194868CD91A5B43A6798CD13DFB10DE31136DF1D2DE45');
-  assert.equal(fallback.download_url, 'https://github.com/ysorgd/subtitle-extractor-updates/releases/download/v1.0.0/SubtitleExtractor_V1.0.0_Setup_x64.exe');
-  assert.match(html, /https:\/\/gitee\.com\/yttcast\/subtitle-extractor-updates\/releases\/download\/v1\.0\.0\/SubtitleExtractor_V1\.0\.0_Setup_x64\.exe/);
+  const fallback = vm.runInContext('FALLBACK_RELEASE', context);
+  assert.equal(fallback.version, OFFICIAL.version);
+  assert.equal(fallback.published_at, OFFICIAL.published_at);
+  assert.equal(fallback.release_notes, OFFICIAL.release_notes);
+  assert.equal(fallback.sha256, OFFICIAL.sha256);
+  assert.equal(fallback.github_download_url, OFFICIAL.github_download_url);
+  assert.equal(fallback.gitee_download_url, OFFICIAL.gitee_download_url);
 });
 
-test('远端文本只通过 textContent 渲染', () => {
+test('元数据按 GitHub、Gitee、静态 fallback 顺序选择且下载地址独立', () => {
+  const context = loadScript();
+  context.githubRelease = {
+    ...manifest(OFFICIAL.github_download_url),
+    version: '1.2.0',
+    release_notes: 'GitHub metadata',
+  };
+  context.giteeRelease = {
+    ...manifest(OFFICIAL.gitee_download_url),
+    version: '1.1.9',
+    release_notes: 'Gitee metadata',
+  };
+
+  const both = vm.runInContext('resolveRelease(githubRelease, giteeRelease)', context);
+  assert.equal(both.version, '1.2.0');
+  assert.equal(both.release_notes, 'GitHub metadata');
+  assert.equal(both.github_download_url, OFFICIAL.github_download_url);
+  assert.equal(both.gitee_download_url, OFFICIAL.gitee_download_url);
+
+  const giteeOnly = vm.runInContext('resolveRelease(null, giteeRelease)', context);
+  assert.equal(giteeOnly.version, '1.1.9');
+  assert.equal(giteeOnly.release_notes, 'Gitee metadata');
+  assert.equal(giteeOnly.github_download_url, OFFICIAL.github_download_url);
+  assert.equal(giteeOnly.gitee_download_url, OFFICIAL.gitee_download_url);
+
+  const offline = vm.runInContext('resolveRelease(null, null)', context);
+  assert.equal(offline.version, OFFICIAL.version);
+  assert.equal(offline.github_download_url, OFFICIAL.github_download_url);
+  assert.equal(offline.gitee_download_url, OFFICIAL.gitee_download_url);
+});
+
+test('脚本独立读取 GitHub 和 Gitee manifest', () => {
+  assert.match(script, /github:\s*'\.\.\/latest\.json'/);
+  assert.match(script, /gitee:\s*'https:\/\/gitee\.com\/yttcast\/subtitle-extractor-updates\/raw\/main\/latest\.json'/);
+  assert.match(script, /Promise\.allSettled/);
+});
+
+test('静态页面已经是正式 V1.1.0 且没有发布占位内容', () => {
+  assert.match(html, /V1\.1\.0/);
+  assert.match(html, new RegExp(OFFICIAL.sha256));
+  assert.match(html, /2026-08-24/);
+  assert.doesNotMatch(html + script + docsReadme, /V1\.0\.0|发布准备中|构建后填写|TODO|TBD|placeholder/i);
+});
+
+test('更新入口和 footer 使用正式仓库链接', () => {
+  assert.match(html, /https:\/\/github\.com\/ysorgd\/subtitle-extractor\/releases\/tag\/v1\.1\.0/);
+  assert.match(html, /https:\/\/github\.com\/ysorgd\/subtitle-extractor(?:["/])/);
+  assert.match(html, /https:\/\/gitee\.com\/yttcast\/subtitle-extractor(?:["/])/);
+  assert.doesNotMatch(html, /href=["'](?:javascript:|https?:\/\/example\.com)/i);
+});
+
+test('远端文字只通过 textContent 渲染', () => {
   assert.doesNotMatch(script, /innerHTML/);
   assert.match(script, /textContent/);
-  assert.match(script, /fetch\('\.\.\/latest\.json', \{ cache: 'no-store' \}\)/);
 });
 
-test('GitHub Pages 从 main /docs 发布并继续读取根目录清单', () => {
+test('V1.1.0 页面说明安全同步、Review 和下一条待检查', () => {
+  assert.match(html, /安全剧本同步/);
+  assert.match(html, /Review/);
+  assert.match(html, /下一条待检查/);
+});
+
+test('GitHub Pages 继续从 main /docs 发布', () => {
   assert.match(siteRoot.pathname, /\/docs\/$/);
   assert.match(rootReadme, /\[`docs\/`\]\(\.\/docs\/\)/);
   assert.match(rootReadme, /main\s*\/docs/);
-  assert.match(script, /fetch\('\.\.\/latest\.json', \{ cache: 'no-store' \}\)/);
+  assert.match(docsReadme, /main\s*\/docs/);
 });
