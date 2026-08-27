@@ -2,7 +2,7 @@
 
 本目录保存“字幕提取器”下载官网的纯静态源码：
 
-- `index.html`：最终 Demo 信息架构与 V1.1.0 正式兜底数据
+- `index.html`：正式下载页信息架构与 V1.2.0 正式兜底数据
 - `styles.css`：桌面端与手机端响应式样式
 - `script.js`：读取双端 `latest.json`、校验字段并更新页面
 - `assets/`：网站使用的品牌图标
@@ -23,7 +23,7 @@ https://ysorgd.github.io/subtitle-extractor-updates/
 - GitHub：`https://raw.githubusercontent.com/ysorgd/subtitle-extractor-updates/main/latest.json`
 - Gitee：`https://gitee.com/yttcast/subtitle-extractor-updates/raw/main/latest.json`
 
-版本、发布日期、版本说明和 SHA256 优先采用有效的 GitHub 清单；GitHub 清单不可用时采用有效的 Gitee 清单；两者均不可用时显示内置的正式 V1.1.0 数据。
+版本、发布日期、版本说明和 SHA256 优先采用有效的 GitHub 清单；GitHub 清单不可用时采用有效的 Gitee 清单；两者均不可用时显示内置的正式 V1.2.0 数据。
 
 两个下载地址始终按通道独立维护和校验：
 

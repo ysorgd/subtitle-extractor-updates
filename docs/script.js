@@ -1,10 +1,10 @@
 const FALLBACK_RELEASE = Object.freeze({
-  version: '1.1.0',
-  published_at: '2026-08-24',
-  release_notes: 'V1.1.0 改进字幕编辑器重绘与快捷键，加入稳定字幕 ID、Review/待检查及更安全的剧本同步，并移除继承时间码旧流程。',
-  sha256: '6A91B98962E172344DA2DE3033F662CDFBC74C9846B6EA2CD1F4D114A8DDC7C7',
-  github_download_url: 'https://github.com/ysorgd/subtitle-extractor/releases/download/v1.1.0/SubtitleExtractor_V1.1.0_Setup_x64.exe',
-  gitee_download_url: 'https://gitee.com/yttcast/subtitle-extractor-updates/releases/download/v1.1.0/SubtitleExtractor_V1.1.0_Setup_x64.exe',
+  version: '1.2.0',
+  published_at: '2026-08-27',
+  release_notes: 'V1.2.0：新增视觉模式、设置记忆、自定义违禁词与时间线滚动交互，并改进剧本匹配、人工复核及识别稳定性。',
+  sha256: '9EBD0884531F43CF930BDB4297201E0BEB22F212CDE2C0C5603548C347887E89',
+  github_download_url: 'https://github.com/ysorgd/subtitle-extractor/releases/download/v1.2.0/SubtitleExtractor_V1.2.0_Setup_x64.exe',
+  gitee_download_url: 'https://gitee.com/yttcast/subtitle-extractor-updates/releases/download/v1.2.0/SubtitleExtractor_V1.2.0_Setup_x64.exe',
 });
 
 const MANIFEST_ENDPOINTS = Object.freeze({
@@ -102,7 +102,7 @@ function manifestStatus(githubRelease, giteeRelease) {
   if (githubRelease && giteeRelease) return '已载入 GitHub 与 Gitee 正式版本信息';
   if (githubRelease) return '已载入 GitHub 正式版本信息；Gitee 使用内置正式链接';
   if (giteeRelease) return 'GitHub 清单暂不可用；已载入 Gitee 正式版本信息';
-  return '清单暂不可用；当前显示内置 V1.1.0 正式信息';
+  return '清单暂不可用；当前显示内置 V1.2.0 正式信息';
 }
 
 function applyRelease(release, statusText) {

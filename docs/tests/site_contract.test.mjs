@@ -8,14 +8,15 @@ const html = readFileSync(new URL('index.html', siteRoot), 'utf8');
 const script = readFileSync(new URL('script.js', siteRoot), 'utf8');
 const docsReadme = readFileSync(new URL('README.md', siteRoot), 'utf8');
 const rootReadme = readFileSync(new URL('../../README.md', import.meta.url), 'utf8');
+const rootManifest = JSON.parse(readFileSync(new URL('../../latest.json', import.meta.url), 'utf8'));
 
 const OFFICIAL = Object.freeze({
-  version: '1.1.0',
-  published_at: '2026-08-24',
-  release_notes: 'V1.1.0 改进字幕编辑器重绘与快捷键，加入稳定字幕 ID、Review/待检查及更安全的剧本同步，并移除继承时间码旧流程。',
-  sha256: '6A91B98962E172344DA2DE3033F662CDFBC74C9846B6EA2CD1F4D114A8DDC7C7',
-  github_download_url: 'https://github.com/ysorgd/subtitle-extractor/releases/download/v1.1.0/SubtitleExtractor_V1.1.0_Setup_x64.exe',
-  gitee_download_url: 'https://gitee.com/yttcast/subtitle-extractor-updates/releases/download/v1.1.0/SubtitleExtractor_V1.1.0_Setup_x64.exe',
+  version: '1.2.0',
+  published_at: '2026-08-27',
+  release_notes: 'V1.2.0：新增视觉模式、设置记忆、自定义违禁词与时间线滚动交互，并改进剧本匹配、人工复核及识别稳定性。',
+  sha256: '9EBD0884531F43CF930BDB4297201E0BEB22F212CDE2C0C5603548C347887E89',
+  github_download_url: 'https://github.com/ysorgd/subtitle-extractor/releases/download/v1.2.0/SubtitleExtractor_V1.2.0_Setup_x64.exe',
+  gitee_download_url: 'https://gitee.com/yttcast/subtitle-extractor-updates/releases/download/v1.2.0/SubtitleExtractor_V1.2.0_Setup_x64.exe',
 });
 
 function manifest(downloadUrl, overrides = {}) {
@@ -95,7 +96,7 @@ test('两类清单下载地址必须保持通道隔离', () => {
   );
 });
 
-test('静态 fallback 与当前正式 V1.1.0 完全一致', () => {
+test('静态 fallback 与当前正式 V1.2.0 完全一致', () => {
   const context = loadScript();
   const fallback = vm.runInContext('FALLBACK_RELEASE', context);
   assert.equal(fallback.version, OFFICIAL.version);
@@ -104,6 +105,14 @@ test('静态 fallback 与当前正式 V1.1.0 完全一致', () => {
   assert.equal(fallback.sha256, OFFICIAL.sha256);
   assert.equal(fallback.github_download_url, OFFICIAL.github_download_url);
   assert.equal(fallback.gitee_download_url, OFFICIAL.gitee_download_url);
+});
+
+test('GitHub 主清单与 Gitee 备用下载使用同一正式 Installer 身份', () => {
+  assert.equal(rootManifest.version, OFFICIAL.version);
+  assert.equal(rootManifest.sha256, OFFICIAL.sha256);
+  assert.equal(rootManifest.download_url, OFFICIAL.github_download_url);
+  assert.match(OFFICIAL.github_download_url, /SubtitleExtractor_V1\.2\.0_Setup_x64\.exe$/);
+  assert.match(OFFICIAL.gitee_download_url, /SubtitleExtractor_V1\.2\.0_Setup_x64\.exe$/);
 });
 
 test('元数据按 GitHub、Gitee、静态 fallback 顺序选择且下载地址独立', () => {
@@ -160,15 +169,15 @@ test('GitHub Pages 实际请求正式 GitHub Raw manifest', async () => {
   );
 });
 
-test('静态页面已经是正式 V1.1.0 且没有发布占位内容', () => {
-  assert.match(html, /V1\.1\.0/);
+test('静态页面已经是正式 V1.2.0 且没有发布占位内容', () => {
+  assert.match(html, /V1\.2\.0/);
   assert.match(html, new RegExp(OFFICIAL.sha256));
-  assert.match(html, /2026-08-24/);
-  assert.doesNotMatch(html + script + docsReadme, /V1\.0\.0|发布准备中|构建后填写|TODO|TBD|placeholder/i);
+  assert.match(html, new RegExp(OFFICIAL.published_at));
+  assert.doesNotMatch(html + script + docsReadme, /V1\.[01]\.0|发布准备中|构建后填写|TODO|TBD|placeholder/i);
 });
 
 test('更新入口和 footer 使用正式仓库链接', () => {
-  assert.match(html, /https:\/\/github\.com\/ysorgd\/subtitle-extractor\/releases\/tag\/v1\.1\.0/);
+  assert.match(html, /https:\/\/github\.com\/ysorgd\/subtitle-extractor\/releases\/tag\/v1\.2\.0/);
   assert.match(html, /https:\/\/github\.com\/ysorgd\/subtitle-extractor(?:["/])/);
   assert.match(html, /https:\/\/gitee\.com\/yttcast\/subtitle-extractor(?:["/])/);
   assert.doesNotMatch(html, /href=["'](?:javascript:|https?:\/\/example\.com)/i);
@@ -179,7 +188,7 @@ test('远端文字只通过 textContent 渲染', () => {
   assert.match(script, /textContent/);
 });
 
-test('V1.1.0 页面说明安全同步、Review 和下一条待检查', () => {
+test('V1.2.0 页面说明安全同步、Review 和下一条待检查', () => {
   assert.match(html, /安全剧本同步/);
   assert.match(html, /Review/);
   assert.match(html, /下一条待检查/);
